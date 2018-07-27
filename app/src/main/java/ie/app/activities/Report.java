@@ -9,9 +9,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -27,8 +29,17 @@ public class Report extends Base {
         setContentView(R.layout.activity_report);
 
         listView = findViewById(R.id.reportList);
-        DonationAdapter adapter = new DonationAdapter(this, donations);
+        final DonationAdapter adapter = new DonationAdapter(this, donations);
         listView.setAdapter(adapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                long idCount = id+1;
+
+               Toast.makeText(getApplicationContext(), "You selected row " + idCount + "for " +
+                       "donation data " +  adapter.getString() + idCount, Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
 }
@@ -58,6 +69,8 @@ class DonationAdapter extends ArrayAdapter<Donation>
         amountView.setText("$" + donation.amount);
         methodView.setText(donation.method);
 
+
+
         return view;
     }
 
@@ -65,5 +78,8 @@ class DonationAdapter extends ArrayAdapter<Donation>
     public int getCount()
     {
         return donations.size();
+    }
+    public String getString(){
+        return donations.toString();
     }
 }
