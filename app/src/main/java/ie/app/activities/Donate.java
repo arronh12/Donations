@@ -53,6 +53,16 @@ public class Donate extends Base {
         amountTotal.setText("$0");
     }
 
+    @Override
+    public void reset(MenuItem item)
+    {
+        totalDonated = 0;
+        amountTotal.setText("$" + totalDonated);
+        progressBar.setProgress(0);
+        donations.clear();
+
+    }
+
 
 
     public void donateButtonPressed (View view)
