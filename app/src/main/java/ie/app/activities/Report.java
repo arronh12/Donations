@@ -4,12 +4,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -20,34 +22,36 @@ import java.util.List;
 import ie.app.R;
 import ie.app.models.Donation;
 
-public class Report extends Base {
+public class Report extends Base implements OnItemClickListener
+{
     ListView listView;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_report);
 
-        listView = findViewById(R.id.reportList);
-        final DonationAdapter adapter = new DonationAdapter(this, donations);
+        listView = (ListView) findViewById(R.id.reportList);
+        DonationAdapter adapter = new DonationAdapter(this,  app.donations);
         listView.setAdapter(adapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                long idCount = id+1;
-
-               Toast.makeText(getApplicationContext(), "You selected row " + idCount + "for " +
-                       "donation data " +  adapter.getString() + idCount, Toast.LENGTH_LONG).show();
-            }
-        });
+        listView.setOnItemClickListener(this);
     }
 
+    @Override
+    public void onItemClick(AdapterView<?> arg0, View arg1, int pos, long id) {
+
+        Toast.makeText(this, "You Selected Row [ " + pos + "]\n" +
+                "For Donation Data [ " + app.donations.get(pos) + "]\n " +
+                "With ID of [" + id + "]", Toast.LENGTH_LONG).show();
+
+    }
 }
 
 class DonationAdapter extends ArrayAdapter<Donation>
 {
-    private Context        context;
-    public  List<Donation> donations;
+    private Context context;
+    public List<Donation> donations;
 
     public DonationAdapter(Context context, List<Donation> donations)
     {
@@ -61,15 +65,13 @@ class DonationAdapter extends ArrayAdapter<Donation>
     {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-        View view       = inflater.inflate(R.layout.row_donate, parent, false);
+        View     view       = inflater.inflate(R.layout.row_donate, parent, false);
         Donation donation   = donations.get(position);
-        TextView amountView = view.findViewById(R.id.row_amount);
-        TextView methodView = view.findViewById(R.id.row_method);
+        TextView amountView = (TextView) view.findViewById(R.id.row_amount);
+        TextView methodView = (TextView) view.findViewById(R.id.row_method);
 
         amountView.setText("$" + donation.amount);
         methodView.setText(donation.method);
-
-
 
         return view;
     }
@@ -78,8 +80,5 @@ class DonationAdapter extends ArrayAdapter<Donation>
     public int getCount()
     {
         return donations.size();
-    }
-    public String getString(){
-        return donations.toString();
     }
 }

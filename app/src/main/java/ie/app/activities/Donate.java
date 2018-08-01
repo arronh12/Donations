@@ -21,7 +21,6 @@ import android.widget.Toast;
 import ie.app.R;
 import ie.app.models.Donation;
 
-
 public class Donate extends Base {
 
     private Button          donateButton;
@@ -35,35 +34,24 @@ public class Donate extends Base {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_donate);
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        donateButton = (Button) findViewById(R.id.donateButton);
 
-        donateButton = findViewById(R.id.donateButton);
-
-        paymentMethod = findViewById(R.id.paymentMethod);
-        progressBar   = findViewById(R.id.progressBar);
-        amountPicker  = findViewById(R.id.amountPicker);
-        amountText    = findViewById(R.id.paymentAmount);
-        amountTotal   = findViewById(R.id.totalSoFar);
+        paymentMethod = (RadioGroup)   findViewById(R.id.paymentMethod);
+        progressBar   = (ProgressBar)  findViewById(R.id.progressBar);
+        amountPicker  = (NumberPicker) findViewById(R.id.amountPicker);
+        amountText    = (EditText)     findViewById(R.id.paymentAmount);
+        amountTotal   = (TextView)     findViewById(R.id.totalSoFar);
 
         amountPicker.setMinValue(0);
         amountPicker.setMaxValue(1000);
         progressBar.setMax(10000);
-        amountTotal.setText("$0");
-    }
-
-    @Override
-    public void reset(MenuItem item)
-    {
-        totalDonated = 0;
-        amountTotal.setText("$" + totalDonated);
-        progressBar.setProgress(0);
-        donations.clear();
+        amountTotal.setText("$" + app.totalDonated);
+        progressBar.setProgress(app.totalDonated);
 
     }
-
-
 
     public void donateButtonPressed (View view)
     {
@@ -77,10 +65,28 @@ public class Donate extends Base {
         }
         if (donatedAmount > 0)
         {
-            newDonation(new Donation(donatedAmount, method));
-            progressBar.setProgress(totalDonated);
-            String totalDonatedStr = "$" + totalDonated;
+            app.newDonation(new Donation(donatedAmount, method));
+            progressBar.setProgress(app.totalDonated);
+            String totalDonatedStr = "$" + app.totalDonated;
             amountTotal.setText(totalDonatedStr);
+        }
+    }
+
+    @Override
+    public void reset(MenuItem item)
+    {
+        app.totalDonated = 0;
+        amountTotal.setText("$" + app.totalDonated);
+        progressBar.setProgress(0);
+        app.donations.clear();
+
+        try {
+            app.serializer.saveDonations(app.donations);
+            Log.v("Donate", "Donation JSON File Reset...");
+        }
+        catch (Exception e)
+        {
+            Log.v("Donate", "Error Resetting Donations... " + e.getMessage());
         }
     }
 }

@@ -2,12 +2,16 @@ package ie.app.activities;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.os.Bundle;
 
+import java.util.ArrayList;
+
 import ie.app.R;
 import ie.app.main.DonationApp;
+import ie.app.models.Donation;
 
 public class Base extends AppCompatActivity {
 
@@ -70,4 +74,18 @@ public class Base extends AppCompatActivity {
     }
 
     public void reset(MenuItem item) {}
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        try {
+            app.serializer.saveDonations((ArrayList<Donation>) app.donations);
+            Log.v("Donate", "Donation JSON File Saved...");
+        }
+        catch (Exception e)
+        {
+            Log.v("Donate", "Error Saving Donations... " + e.getMessage());
+        }
+    }
 }
